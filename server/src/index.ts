@@ -4,9 +4,9 @@ import { createHTTPServer } from '@trpc/server/adapters/standalone';
 import 'dotenv/config';
 import cors from 'cors';
 import superjson from 'superjson';
-import { getUIComponentsInputSchema } from './schema';
-import { getUIComponents } from './handlers/get_ui_components';
+import { pageRenderInputSchema } from './schema';
 import { renderPage } from './handlers/render_page';
+import { getUIComponents } from './handlers/get_ui_components';
 
 const t = initTRPC.create({
   transformer: superjson,
@@ -19,12 +19,11 @@ const appRouter = router({
   healthcheck: publicProcedure.query(() => {
     return { status: 'ok', timestamp: new Date().toISOString() };
   }),
-  getUIComponents: publicProcedure
-    .input(getUIComponentsInputSchema)
-    .query(({ input }) => getUIComponents(input)),
   renderPage: publicProcedure
-    .input(getUIComponentsInputSchema)
-    .query(({ input }) => renderPage(input.page)),
+    .input(pageRenderInputSchema)
+    .query(({ input }) => renderPage(input)),
+  getUIComponents: publicProcedure
+    .query(() => getUIComponents()),
 });
 
 export type AppRouter = typeof appRouter;

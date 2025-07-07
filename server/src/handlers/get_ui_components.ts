@@ -1,21 +1,27 @@
 
-import { type GetUIComponentsInput, type Button } from '../schema';
+import { db } from '../db';
+import { uiComponentsTable } from '../db/schema';
+import { type UIComponent } from '../schema';
+import { eq } from 'drizzle-orm';
 
-export const getUIComponents = async (input: GetUIComponentsInput): Promise<Button[]> => {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching UI components for a specific page from the database.
-    // For now, returning a static red button with "hello" text and no action.
-    
-    if (input.page === 'home') {
-        return [
-            {
-                id: 'red-button-1',
-                text: 'hello',
-                color: 'red',
-                action: null // No action when clicked
-            }
-        ];
-    }
-    
-    return [];
-};
+export async function getUIComponents(): Promise<UIComponent[]> {
+  try {
+    // Fetch all enabled UI components from the database
+    const results = await db.select()
+      .from(uiComponentsTable)
+      .where(eq(uiComponentsTable.enabled, true))
+      .execute();
+
+    // Transform database results to match the schema
+    return results.map(component => ({
+      id: component.component_id,
+      type: component.type,
+      color: component.color,
+      text: component.text || undefined,
+      enabled: component.enabled
+    }));
+  } catch (error) {
+    console.error('Failed to fetch UI components:', error);
+    throw error;
+  }
+}

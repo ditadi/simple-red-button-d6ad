@@ -2,18 +2,28 @@
 import { z } from 'zod';
 
 // UI Component schema
-export const buttonSchema = z.object({
+export const uiComponentSchema = z.object({
   id: z.string(),
-  text: z.string(),
+  type: z.string(),
   color: z.string(),
-  action: z.string().nullable()
+  text: z.string().optional(),
+  enabled: z.boolean().default(true)
 });
 
-export type Button = z.infer<typeof buttonSchema>;
+export type UIComponent = z.infer<typeof uiComponentSchema>;
 
-// Input schema for getting UI components
-export const getUIComponentsInputSchema = z.object({
-  page: z.string().optional().default('home')
+// Page render schema
+export const pageRenderInputSchema = z.object({
+  pageId: z.string().optional(),
+  theme: z.string().optional().default('default')
 });
 
-export type GetUIComponentsInput = z.infer<typeof getUIComponentsInputSchema>;
+export type PageRenderInput = z.infer<typeof pageRenderInputSchema>;
+
+export const pageRenderOutputSchema = z.object({
+  html: z.string(),
+  css: z.string(),
+  title: z.string()
+});
+
+export type PageRenderOutput = z.infer<typeof pageRenderOutputSchema>;
